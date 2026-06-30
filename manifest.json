@@ -1,0 +1,25 @@
+{
+  "name": "Prizefighter — Boxing & BKB",
+  "short_name": "Prizefighter",
+  "description": "Prizefighter fighter and fan platform for Gloved Boxing and Bare Knuckle Boxing / BKB only.",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "background_color": "#0a0a0a",
+  "theme_color": "#b00000",
+  "orientation": "portrait-primary",
+  "categories": ["sports", "social", "business"],
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Search Fighters", "short_name": "Search", "url": "/index.html#search", "description": "Search Gloved Boxing and BKB fighters" },
+    { "name": "Create Fighter Profile", "short_name": "Fighter", "url": "/index.html#signup-fighter", "description": "Create a fighter profile" },
+    { "name": "Prizefighter Merch", "short_name": "Merch", "url": "/index.html#merch", "description": "Open official Prizefighter merch" }
+  ]
+}
