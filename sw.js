@@ -1,4 +1,4 @@
-const CACHE_NAME = 'prizefighter-phase10-pwa-v1';
+const CACHE_NAME = 'prizefighter-phase12-refinements-v1';
 const APP_SHELL = [
   './',
   './index.html',
@@ -7,7 +7,8 @@ const APP_SHELL = [
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
-  './maskable-512.png'
+  './maskable-512.png',
+  './zardoz-profile.jpg'
 ];
 
 self.addEventListener('install', event => {

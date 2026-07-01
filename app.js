@@ -2801,3 +2801,133 @@ renderAdmin=function(){
     '</div><div id="admin-list" style="padding:0 16px 20px"></div>';
   adminLoadPhase11Launch();
 };
+
+// ===== PHASE 12: USER REQUESTED INDEX / SIGNUP / PROFILE REFINEMENTS =====
+const PF_PHASE12_VERSION='phase12-index-profile-refinements';
+const PF_ZARDOZ_IMAGE='zardoz-profile.jpg';
+const PF_WEIGHT_DIVISIONS=[
+  {name:'Heavyweight',range:'Over 220.4 lbs (+100 kg)'},
+  {name:'Bridgerweight',range:'200–220.4 lbs (90.7–100 kg)'},
+  {name:'Cruiserweight',range:'175–200 lbs (79.4–90.7 kg)'},
+  {name:'Light Heavyweight',range:'168–175 lbs (76.2–79.4 kg)'},
+  {name:'Super Middleweight',range:'160–168 lbs (72.6–76.2 kg)'},
+  {name:'Middleweight',range:'154–160 lbs (69.9–72.6 kg)'},
+  {name:'Super Welterweight (Junior Middleweight)',range:'147–154 lbs (66.7–69.9 kg)'},
+  {name:'Welterweight',range:'140–147 lbs (63.5–66.7 kg)'},
+  {name:'Super Lightweight (Junior Welterweight)',range:'135–140 lbs (61.2–63.5 kg)'},
+  {name:'Lightweight',range:'130–135 lbs (59.0–61.2 kg)'},
+  {name:'Super Featherweight',range:'126–130 lbs (57.2–59.0 kg)'},
+  {name:'Featherweight',range:'122–126 lbs (55.3–57.2 kg)'},
+  {name:'Super Bantamweight',range:'118–122 lbs (53.5–55.3 kg)'},
+  {name:'Bantamweight',range:'115–118 lbs (52.2–53.5 kg)'},
+  {name:'Super Flyweight',range:'112–115 lbs (50.8–52.2 kg)'},
+  {name:'Flyweight',range:'108–112 lbs (49.0–50.8 kg)'},
+  {name:'Light Flyweight',range:'105–108 lbs (47.6–49.0 kg)'},
+  {name:'Minimumweight (Strawweight)',range:'102–105 lbs (46.3–47.6 kg)'},
+  {name:'Atomweight',range:'Up to 102 lbs (46.3 kg)'}
+];
+function pf12WeightRange(name){ const x=PF_WEIGHT_DIVISIONS.find(w=>w.name===name); return x?x.range:''; }
+function pf12CleanCountry(c){ return String(c||'').replace('🇲🇹 ','').trim(); }
+function pf12PatchDemoFighter(){
+  const f=fighters.find(x=>x.name==='ZARDOZ CERFF')||fighters[0]; if(!f) return;
+  f.sport='Gloved Boxing'; f.weight='Heavyweight'; f.image=PF_ZARDOZ_IMAGE; f.city='Birgu'; f.country='🇲🇹 Malta';
+  f.wins=0; f.losses=0; f.draws=0; f.kos=0; f.sponsor=null; f.verified=true; f.boxrec='https://boxrec.com';
+  f.division='Heavyweight'; f.rank='-'; f.bouts='-'; f.rounds='-'; f.career='-'; f.debut='-'; f.birthName='-'; f.genre='Gloved Boxing'; f.nationality='Maltese'; f.residence='Birgu, Malta'; f.birthPlace='-'; f.promoter='-'; f.manager='-'; f.proTitles='-'; f.amateurTitles='-';
+}
+pf12PatchDemoFighter();
+function pf12AvatarHTML(f,cls){ return f&&f.image ? '<div class="'+cls+'"><img src="'+f.image+'" alt="'+pfEscape(f.name||'fighter')+'"></div>' : '<div class="'+cls+'">'+pfEscape((f&&f.initials)||'PF')+'</div>'; }
+renderCard=function(f,onclick){
+  const meta=[f.sport,f.city+', '+f.country,f.weight].filter(Boolean).join(' · ');
+  return '<div class="fighter-card" onclick="'+onclick+'">'
+    +pf12AvatarHTML(f,'fighter-avatar')
+    +'<div class="fighter-info"><div class="fighter-name">'+pfEscape(f.name)+' <span style="color:var(--gray-text);font-weight:400;font-size:12px">'+pfEscape(f.ringname||'')+'</span></div>'
+    +'<div class="fighter-meta">'+pfEscape(meta)+'</div>'
+    +'<div class="fighter-record"><span style="color:var(--blue);font-weight:900">Featured Fighter</span> · <span style="color:var(--gold);font-weight:900">Pinned Fighter</span></div></div>'
+    +(f.verified?'<div class="verified-badge">✓ Verified</div>':'')+'</div>';
+};
+function pf12SearchList(val){
+  pf12PatchDemoFighter();
+  const v=(val||'').toLowerCase(); let list=[...fighters];
+  if(currentFilter==='Gloved Boxing') list=list.filter(f=>f.sport==='Gloved Boxing');
+  else if((currentFilter||'').includes('Bare')) list=list.filter(f=>(f.sport||'').includes('Bare Knuckle'));
+  if(v) list=list.filter(f=>[f.name,f.ringname,f.country,f.city,f.weight,f.gym,f.sport,f.stance,f.status,f.passport,f.boxrec,f.facebook].some(x=>(x||'').toString().toLowerCase().includes(v)));
+  list.sort((a,b)=>(b.verified===true)-(a.verified===true));
+  const el=document.getElementById('search-list'); if(!el) return; const label=document.getElementById('results-label');
+  if(!list.length){ el.innerHTML='<div style="text-align:center;padding:30px 20px"><div style="font-size:40px;margin-bottom:12px">🥊</div><div style="font-size:15px;font-weight:800;color:var(--white);margin-bottom:6px">No fighters found</div><div style="font-size:12px;color:var(--gray-text);margin-bottom:16px">When fighters create and verify profiles, their fighter block appears here.</div><button class="btn-primary" style="max-width:220px;padding:12px" onclick="openSheet(\'signup\')">Create Fighter Profile</button></div>'; return; }
+  el.innerHTML=list.map(f=>renderCard(f,'openProfile('+f.id+')')).join(''); if(label) label.innerHTML=list.length+' <span>Fighter'+(list.length!==1?'s':'')+'</span>';
+}
+fallbackSearch=pf12SearchList;
+liveSearch=pf12SearchList;
+goSearch=function(val){ showPage('search');setNav(document.querySelectorAll('.bnav-btn')[1]); const inp=document.getElementById('search-input'); if(inp)inp.value=val||''; pf12SearchList(val||''); };
+function pf12Info(label,value){ return '<div class="info-box"><div class="info-box-label">'+pfEscape(label)+'</div><div class="info-box-value">'+pfEscape(value||'-')+'</div></div>'; }
+openProfile=function(id){
+  pf12PatchDemoFighter();
+  const f=fighters.find(x=>x.id===id); if(!f)return;
+  const passportID=f.passport||('PF-'+String(f.id).padStart(6,'0'));
+  const dob=f.dob?new Date(f.dob).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}):'—';
+  let html='<div class="profile-topbar">'
+    +'<button class="back-btn" onclick="goSearch(\'\')">←</button>'
+    +'<span class="profile-topbar-title phase12-title" onclick="goSearch(\'\')" style="color:#fff;font-weight:900;letter-spacing:1px;cursor:pointer">Back Fighter</span>'
+    +'<div class="profile-topbar-actions"><button class="icon-btn" onclick="shareProfile(\''+pfEscape(f.name)+'\')">🔗</button><button class="icon-btn" onclick="openSheet(\'report\')">🚩</button></div></div>'
+    +'<div class="profile-hero">'
+    +(f.verified?'<div class="verified-corner">✓ Verified</div>':'')
+    +'<div class="profile-hero-actions"><button class="mini-hero-btn" data-liked="0" onclick="event.stopPropagation();toggleLike(this,'+f.id+')">✔ <span class="like-cnt">0</span></button><button class="mini-hero-btn" onclick="event.stopPropagation();shareProfile(\''+pfEscape(f.name)+'\')">🔗</button><button class="mini-hero-btn" onclick="event.stopPropagation();openMsgTo('+f.id+',\''+pfEscape(f.name)+'\')">✉️</button></div>'
+    +pf12AvatarHTML(f,'profile-pic-lg')
+    +'<div class="profile-name-lg">'+pfEscape(f.name)+'</div><div class="profile-nickname">'+pfEscape(f.ringname||'')+'</div><div class="profile-walkout">🎵 '+pfEscape(f.walkout||'')+'</div>'
+    +'<div class="profile-location">🇲🇹 '+pfEscape(f.city)+', '+pfEscape(pf12CleanCountry(f.country))+'</div></div>'
+    +'<div class="profile-ad-banner"><div class="profile-ad-track" id="pad-'+f.id+'">'+buildProfileAds()+'</div></div>'
+    +'<div class="profile-action-row plugin-strip phase12-plugin-strip">'
+    +'<button class="profile-action-btn" onclick="showPage(\'plugins\')">Get Plugins</button><div class="phase12-plugin-empty">Downloaded plugins will appear here automatically after purchase or free activation.</div>'
+    +(f.facebook?'<button class="profile-action-btn" onclick="window.open(\''+f.facebook+'\',\'_blank\')"><span class="pa-icon" style="color:#1877f2;font-weight:900">f</span>Facebook</button>':'')
+    +'</div>'
+    +'<div class="sponsor-bar-empty"><b style="color:var(--gold)">Sponsor Bar:</b> sponsor icons load here after the fighter buys a Sponsor Link plugin. Each sponsor link is $9/month and locks to the uploaded sponsor icon/link.</div>';
+  html+='<div class="profile-section"><div class="profile-section-title">Fighter Data Sheet</div><div class="info-grid">'
+    +pf12Info('Date of Birth',dob)+pf12Info('Passport ID',passportID)+pf12Info('Weight Class',f.weight)+pf12Info('Weight Range',pf12WeightRange(f.weight))+pf12Info('Division',f.division||f.weight)+pf12Info('Rank',f.rank)
+    +pf12Info('Bouts',f.bouts)+pf12Info('Rounds',f.rounds)+pf12Info('KOs',String(f.kos||'-'))+pf12Info('Career',f.career)+pf12Info('Debut',f.debut)+pf12Info('Birth Name',f.birthName)+pf12Info('Genre',f.genre||f.sport)
+    +pf12Info('Nationality',f.nationality)+pf12Info('Stance',f.stance)+pf12Info('Height',(f.height||'—')+' cm')+pf12Info('Reach',(f.reach||'—')+' cm')+pf12Info('Residence',f.residence)+pf12Info('Birth Place',f.birthPlace)
+    +pf12Info('Promoter',f.promoter)+pf12Info('Manager',f.manager)+pf12Info('Titles Pro',f.proTitles)+pf12Info('Titles Amateur',f.amateurTitles)
+    +'<div class="info-box"><div class="info-box-label">Record</div><div class="info-box-value"><button class="btn-secondary" style="padding:7px 10px;font-size:10px" onclick="window.open(\''+(f.boxrec||'https://boxrec.com')+'\',\'_blank\')">View approved BoxRec record →</button></div></div>'
+    +pf12Info('Gym',f.gym)+pf12Info('Status',f.status)+'</div></div>'
+    +'<div class="profile-section"><div class="profile-section-title">About</div><p style="font-size:13px;color:var(--gray-light);line-height:1.7">'+pfEscape(f.bio||'')+'</p></div>'
+    +'<div class="profile-section"><div class="profile-section-title">Posts &amp; Updates</div><div class="phase12-small-note">Fighter controls: comments can be on/off. Visitors can post only if comments are open and account is verified. Photo posts are fighter-only and limited to 3 pictures.</div><div id="post-feed-'+f.id+'"></div>'
+    +'<div style="margin-top:12px"><select class="form-select" id="comment-mode-'+f.id+'" style="margin-bottom:8px"><option value="on">Comments ON — verified users can comment</option><option value="off">Comments OFF</option></select><textarea class="form-input" id="new-post-'+f.id+'" rows="3" placeholder="Sign in with a verified fighter or fan account to post..." style="resize:none;margin-bottom:8px"></textarea><div id="post-img-preview-'+f.id+'" style="margin-bottom:8px"></div><div style="display:flex;gap:8px"><button class="btn-secondary" style="flex:1;padding:10px;font-size:11px" onclick="document.getElementById(\'post-img-'+f.id+'\').click()">📷 Photo — fighter only, max 3</button><button class="btn-primary" style="flex:1;padding:10px;font-size:11px" onclick="addPost('+f.id+')">Post</button></div><input type="file" id="post-img-'+f.id+'" accept="image/*" style="display:none" onchange="previewPostImg('+f.id+',this)"></div></div>'
+    +'<div class="profile-section" id="profile-store-bar-'+f.id+'"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div class="profile-section-title" style="margin-bottom:0">🥊 PRIZEFIGHTER <span style="color:var(--red)">MERCH</span></div><button style="background:none;border:none;color:var(--red);font-size:11px;font-weight:700;cursor:pointer" onclick="showPage(\'merch\')">See All →</button></div><div id="store-bar-'+f.id+'" style="display:flex;gap:10px;overflow-x:auto;padding-bottom:12px;-webkit-overflow-scrolling:touch;scrollbar-width:none"></div></div>'
+    +'<div class="profile-section" style="border-bottom:none;text-align:center"><button class="report-btn" onclick="openSheet(\'report\')">🚩 Report this profile</button></div>';
+  document.getElementById('profile-content').innerHTML=html; showPage('profile');
+  setTimeout(function(){ populateMerchScrollBar('store-bar-'+f.id); if(typeof phase4RenderPosts==='function') phase4RenderPosts(f.id); },50);
+};
+const pf12OldPreviewPostImg=previewPostImg;
+previewPostImg=function(fid,input){
+  if(getLoggedInType()!=='fighter'){ showToast('Only verified fighters can post pictures. Fans can post text only.'); input.value=''; return; }
+  return pf12OldPreviewPostImg(fid,input);
+};
+const pf12OldAddPost=addPost;
+addPost=function(fid){
+  const mode=document.getElementById('comment-mode-'+fid); if(mode&&mode.value==='off') showToast('Comments are switched off for this profile after this post.');
+  const img=document.querySelector('#post-img-preview-'+fid+' img'); if(img && getLoggedInType()!=='fighter'){ showToast('Only fighters can add photo posts'); return; }
+  return pf12OldAddPost(fid);
+};
+const pf12SubmitOld=submitFighterProfile;
+submitFighterProfile=async function(){
+  const bio=(document.getElementById('f-bio')?.value||'').trim();
+  if((bio.match(/\S+/g)||[]).length>500){ showToast('Bio maximum is 500 words'); return; }
+  if(/https?:\/\/|www\.|\.com|\.net|\.org/i.test(bio)){ showToast('No links allowed in fighter bio'); return; }
+  const gym=(document.getElementById('f-gym')?.value||'').trim();
+  if(/https?:\/\/|www\./i.test(gym)){ showToast('Gym / Club name only — no links'); return; }
+  await pf12SubmitOld();
+};
+const pf12RenderPluginsOld=renderPlugins;
+renderPlugins=function(){
+  const el=document.getElementById('plugins-list'); if(!el){ if(pf12RenderPluginsOld) pf12RenderPluginsOld(); return; }
+  const sponsorRule='<div class="pf-pwa-card" style="border-color:var(--gold);margin-bottom:10px"><div class="pf-pwa-title">Sponsor Link Plugin — $9/month per sponsor</div><div class="pf-pwa-text">One sponsor link per purchase. Once the sponsor icon and URL are loaded they are locked to that plugin. To add another sponsor, buy another $9/month sponsor plugin.</div><button class="btn-primary" onclick="pf6purchasePlugin(\'sponsor-link-single\',\'Sponsor Link Plugin\',\'$9/month\')">Activate Sponsor Plugin</button></div>';
+  const trainerRule='<div class="pf-pwa-card" style="border-color:var(--blue);margin-bottom:10px"><div class="pf-pwa-title">Online Trainer Plugin — $5/month</div><div class="pf-pwa-text">Verified fighters can offer online training from their Prizefighter profile. This is now handled from the Plugin page, not the signup form.</div><button class="btn-secondary" onclick="pf6purchasePlugin(\'online-trainer\',\'Online Trainer Plugin\',\'$5/month\')">Activate Trainer Plugin</button></div>';
+  if(pf12RenderPluginsOld) pf12RenderPluginsOld();
+  el.insertAdjacentHTML('afterbegin',sponsorRule+trainerRule);
+};
+function pf12CleanSignupPluginBlocks(){
+  document.querySelectorAll('.form-section-title').forEach(function(t){ const txt=t.textContent||''; if(txt.includes('Online Trainer Plugin')||txt.includes('Sponsor Link Plugin')||txt.includes('YouTube Fight Channel')){ const sec=t.closest('.form-section'); if(sec) sec.remove(); }});
+}
+document.addEventListener('DOMContentLoaded',function(){
+  pf12CleanSignupPluginBlocks();
+  const h=document.getElementById('home-search'); if(h){ h.oninput=function(){ if(this.value.trim().length>1) goSearch(this.value); }; h.placeholder='Search by fighter name, surname, country, city or weight division...'; }
+});

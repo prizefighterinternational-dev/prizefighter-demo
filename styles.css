@@ -270,3 +270,15 @@ main{padding-top:84px}
 
 /* Phase 11 launch readiness */
 .legal-page{font-size:12px;color:var(--gray-light);line-height:1.7}.legal-page p{margin-bottom:12px}.phase11-card{background:var(--black);border:1px solid var(--gray-border);border-radius:3px;padding:14px;margin-bottom:10px}.phase11-card.good{border-color:rgba(0,200,83,.45)}.phase11-card.warn{border-color:rgba(255,193,7,.55)}.phase11-card.danger{border-color:rgba(255,0,0,.55)}.phase11-title{font-size:12px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}.phase11-text{font-size:11px;color:var(--gray-light);line-height:1.6}.phase11-badge{display:inline-block;margin-top:8px;padding:4px 7px;border-radius:2px;font-size:9px;font-weight:900;letter-spacing:1px;text-transform:uppercase;border:1px solid var(--gray-border);color:var(--gray-text)}.phase11-badge.good{border-color:var(--green);color:var(--green)}.phase11-badge.warn{border-color:var(--gold);color:var(--gold)}.phase11-badge.danger{border-color:var(--red);color:var(--red)}
+
+
+/* Phase 12 refinements */
+.dropdown-icon{display:none!important}
+.dropdown-item{grid-template-columns:1fr!important;padding-left:16px!important}
+.pf-facebook-logo{background:#1877f2!important;color:#fff!important;font-family:Arial,sans-serif!important;font-weight:900!important;font-size:28px!important;border-radius:6px!important}
+.pf-youtube-logo{background:#ff0000!important;color:#fff!important;font-size:20px!important;border-radius:6px!important}
+.fighter-avatar img,.profile-pic-lg img{width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block}
+.profile-pic-lg{overflow:hidden;position:relative}.verified-corner{position:absolute;right:12px;top:12px;background:#1877f2;color:#fff;border-radius:999px;padding:5px 10px;font-size:10px;font-weight:900;letter-spacing:1px;text-transform:uppercase;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.profile-topbar-title.phase12-title{font-size:13px!important}.plugin-strip.phase12-plugin-strip{justify-content:space-between}.phase12-plugin-empty{font-size:11px;color:var(--gray-text);padding:12px;text-align:center;flex:1}.sponsor-bar-empty{padding:14px 16px;background:var(--black2);border-bottom:1px solid var(--gray-border);font-size:11px;color:var(--gray-text)}
+.phase12-small-note{font-size:10px;color:var(--gray-text);line-height:1.5;margin-top:6px}
+.phase12-range{display:block;color:var(--gray-text);font-size:10px;font-weight:500;margin-top:2px}
